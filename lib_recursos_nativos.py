@@ -1,4 +1,4 @@
-from subprocess import run as subproceso
+from subprocess import run as subproceso, Popen as asíncrono, PIPE as tubería
 
 def notificación(cuerpo: str, ícono: str = '', título: str = 'Notificación', urgencia: str = 'normal', aplicación: str = '') -> None:
 	"""
@@ -11,3 +11,17 @@ def notificación(cuerpo: str, ícono: str = '', título: str = 'Notificación',
 	comando += ['-u', urgencia]
 
 	subproceso(comando)
+
+def pipas(*args: list[str] | str) -> None:
+	"""
+	Ejecuta comandos en pipas en la forma recomendada.
+	"""
+	proceso: asíncrono | None = None
+	for comando in args:
+		if isinstance(comando, str):
+			comando = comando.split()
+
+		if proceso is None:
+			proceso = asíncrono(comando, stdout = tubería)
+		else:
+			proceso = asíncrono(comando, stdin = proceso.stdout)
